@@ -7,12 +7,12 @@ com\mycompany\disastermanagementsystem\daos\FeedbackDao.class
 com\mycompany\disastermanagementsystem\App.class
 com\mycompany\disastermanagementsystem\controllers\MainController.class
 com\mycompany\disastermanagementsystem\models\Report.class
+com\mycompany\disastermanagementsystem\db\DBConnection.class
 com\mycompany\disastermanagementsystem\controllers\LoginController.class
 module-info.class
 com\mycompany\disastermanagementsystem\daos\AuthorityDao.class
 com\mycompany\disastermanagementsystem\models\User.class
 com\mycompany\disastermanagementsystem\controllers\PastEmergencyReportsController$1.class
-com\mycompany\disastermanagementsystem\daos\ReportDao.class
 com\mycompany\disastermanagementsystem\controllers\ReportEmergencyController.class
 com\mycompany\disastermanagementsystem\controllers\ViewAssignedEmergenciesController$1.class
 com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsController.class
@@ -26,3 +26,4 @@ com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsControlle
 com\mycompany\disastermanagementsystem\models\Feedback.class
 com\mycompany\disastermanagementsystem\controllers\PastEmergencyReportsController.class
 com\mycompany\disastermanagementsystem\daos\UserDao.class
+com\mycompany\disastermanagementsystem\daos\EmergencyDao.class

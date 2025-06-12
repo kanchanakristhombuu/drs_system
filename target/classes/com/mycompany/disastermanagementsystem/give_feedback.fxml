@@ -11,74 +11,81 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="508.0" prefWidth="806.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.disastermanagementsystem.controllers.GiveFeedbackController">
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+<HBox prefHeight="800.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.disastermanagementsystem.controllers.GiveFeedbackController">
    <children>
-      <HBox prefHeight="482.0" prefWidth="776.0">
+      <VBox alignment="CENTER" prefHeight="800.0" prefWidth="350.0" spacing="10.0">
          <children>
-            <VBox alignment="TOP_CENTER" prefHeight="468.0" prefWidth="288.0" spacing="10.0">
+            <ImageView fitHeight="78.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </ImageView>
+            <Button fx:id="dashboardBtn" onAction="#onDashboardHandler" prefHeight="62.0" prefWidth="183.0" text="Dashboard" />
+            <Button fx:id="reportEmergencyBtn" onAction="#onReportEmergencyHandler" prefHeight="62.0" prefWidth="183.0" text="Report Emergency" />
+            <Button fx:id="pastReportsBtn" onAction="#onPastEmergencyReportHandler" prefHeight="62.0" prefWidth="183.0" text="Past Emergency Reports" />
+            <Button fx:id="viewEmergencyReportsBtn" onAction="#viewEmergencyReportsHandler" prefHeight="62.0" prefWidth="183.0" text="View Emergency Reports" />
+            <Button fx:id="viewAssignedEmergenciesBtn" onAction="#viewAssignedEmergenciesHandler" prefHeight="62.0" prefWidth="183.0" text="View Assigned Emergencies" />
+            <VBox alignment="BOTTOM_CENTER" prefHeight="148.0" prefWidth="288.0">
                <children>
-                  <ImageView fitHeight="78.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true">
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </ImageView>
-                  <Button fx:id="dashboardBtn" onAction="#onDashboardHandler" text="Dashboard"/>
-                  <Button fx:id="reportEmergencyBtn" onAction="#onReportEmergencyHandler" text="Report Emergency"/>
-                  <Button fx:id="pastReportsBtn" onAction="#onPastEmergencyReportHandler" text="Past Emergency Reports"/>
-                  <Button fx:id="viewEmergencyReportsBtn" onAction="#viewEmergencyReportsHandler" text="View Emergency Reports"/>
-                  <Button fx:id="viewAssignedEmergenciesBtn" onAction="#viewAssignedEmergenciesHandler" text="View Assigned Emergencies"/>
-                  <VBox alignment="BOTTOM_CENTER" prefHeight="148.0" prefWidth="288.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#onLogoutHandler" prefHeight="35.0" prefWidth="82.0" text="Log Out" />
-                     </children>
-                  </VBox>
+                  <Button mnemonicParsing="false" onAction="#onLogoutHandler" prefHeight="54.0" prefWidth="107.0" text="Log Out" />
                </children>
-               <padding>
-                  <Insets top="20.0" />
-               </padding>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
             </VBox>
-            <Line endX="-101.41421508789062" endY="467.29290771484375" startX="-100.0" stroke="#a8a4a4ba" />
-            <VBox prefHeight="439.0" prefWidth="381.0" spacing="10.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
+         </children>
+         <padding>
+            <Insets top="20.0" />
+         </padding>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <HBox.margin>
+            <Insets />
+         </HBox.margin>
+      </VBox>
+      <Line endX="-102.44496154785156" endY="799.2929077148438" startX="-100.0" stroke="#a8a4a4ba" />
+      <VBox prefHeight="800.0" prefWidth="954.0" spacing="10.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <children>
+            <Label text="Give Feedback">
+               <font>
+                  <Font size="28.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" top="200.0" />
+               </VBox.margin>
+            </Label>
+            <VBox prefHeight="363.0" prefWidth="877.0">
                <children>
-                  <Label text="Give Feedback">
-                     <font>
-                        <Font size="28.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </Label>
                   <Label text="Rate your experience">
                      <font>
                         <Font size="14.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="20.0" />
+                     </VBox.margin>
                   </Label>
-                  <Slider fx:id="feedbackRatingSlider" max="10.0" showTickLabels="true" showTickMarks="true" />
+                  <Slider fx:id="feedbackRatingSlider" max="10.0" maxWidth="-Infinity" prefHeight="37.0" prefWidth="600.0" showTickLabels="true" showTickMarks="true" />
                   <Label text="Your experience">
                      <font>
                         <Font size="14.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="15.0" />
+                     </VBox.margin>
                   </Label>
-                  <TextArea fx:id="experienceTextarea" prefHeight="92.0" prefWidth="361.0" />
-                  <Button mnemonicParsing="false" onAction="#feebackSubmitHandler" prefHeight="32.0" prefWidth="132.0" text="Submit Feedback" />
+                  <TextArea fx:id="experienceTextarea" maxWidth="-Infinity" prefHeight="92.0" prefWidth="600.0" />
+                  <Button mnemonicParsing="false" onAction="#feebackSubmitHandler" prefHeight="32.0" prefWidth="132.0" text="Submit Feedback">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </Button>
                </children>
-               <padding>
-                  <Insets left="20.0" right="20.0" top="20.0" />
-               </padding>
             </VBox>
          </children>
-      </HBox>
+         <padding>
+            <Insets left="60.0" right="60.0" top="20.0" />
+         </padding>
+      </VBox>
    </children>
-</VBox>
+</HBox>

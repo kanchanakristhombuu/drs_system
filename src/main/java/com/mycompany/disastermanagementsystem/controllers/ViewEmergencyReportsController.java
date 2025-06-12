@@ -56,6 +56,7 @@ public class ViewEmergencyReportsController extends MainController implements In
     private TableColumn<Report, Void> contactAuthority;
     @FXML
     private TableColumn<Report, Void> completeBtnCol;
+    
 
     private FilteredList<Report> activeReports;
 
@@ -78,9 +79,11 @@ public class ViewEmergencyReportsController extends MainController implements In
                 -> new ReadOnlyStringWrapper(c.getValue().getStatus()));
 
         ObservableList<Report> master = FXCollections.observableArrayList(EmergencyDao.INSTANCE.getAll());
+        
         activeReports = new FilteredList<>(master,
                 rpt -> !"Complete".equals(rpt.getStatus())
         );
+        
         viewReportsTable.setItems(activeReports);
 
         contactAuthority.setCellFactory(new Callback<>() {

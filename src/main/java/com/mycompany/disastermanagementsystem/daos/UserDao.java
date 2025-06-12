@@ -4,9 +4,11 @@
  */
 package com.mycompany.disastermanagementsystem.daos;
 
+import com.mycompany.disastermanagementsystem.db.DBConnection;
 import com.mycompany.disastermanagementsystem.models.User;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  *
@@ -14,23 +16,35 @@ import javafx.collections.ObservableList;
  */
 public class UserDao {
     public static final UserDao INSTANCE = new UserDao();
-
-    private final ObservableList<User> users = FXCollections.observableArrayList();
-
-    private UserDao() {
-        users.add(new User("admin@example.com", "admin", "Admin", "Administrator"));
-        users.add(new User("user@example.com", "user", "User", "Regular User"));
-        users.add(new User("fire@example.com", "service", "Fire", "Fire Service"));
-        users.add(new User("flood@example.com", "service", "Flood", "Flood Service"));
-        users.add(new User("earthquake@example.com","service", "Earthquake", "Quake Service"));
-        users.add(new User("hurricane@example.com", "service", "Hurricane", "Hurricane Service"));
-        users.add(new User("animal@example.com", "service", "Dangerous Animal", "Animal Service"));
-    }
+    private UserDao() {}
+    
+    /**
+     * Look up a user by email in the database.
+     * @return a User object if found, or null.
+     */
     
     public User findByEmail(String email) {
-        return users.stream()
-                    .filter(u -> u.getEmail().equalsIgnoreCase(email))
-                    .findFirst()
-                    .orElse(null);
+        String sql = "SELECT email, password, role, name FROM users WHERE email = ?";
+
+        try (Connection cx = DBConnection.getConnection();
+             PreparedStatement ps = cx.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String em   = rs.getString("email");
+                    String pw   = rs.getString("password");
+                    String role = rs.getString("role");
+                    String name = rs.getString("name");
+                    return new User(em, pw, role, name);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
+    
+    
 }

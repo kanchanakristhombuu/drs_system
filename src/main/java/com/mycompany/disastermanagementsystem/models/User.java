@@ -17,11 +17,13 @@ public class User {
     private final StringProperty role     = new SimpleStringProperty(this, "role");
     private final StringProperty name     = new SimpleStringProperty(this, "name");
     
+    public User() { }
+    
     public User(String email, String password, String role, String name) {
-        setEmail(email);
-        setPassword(password);
-        setRole(role);
-        setName(name);
+        this.email.set(email);
+        this.password.set(password);
+        this.role.set(role);
+        this.name.set(name);
     }
     
     public String getEmail() { 

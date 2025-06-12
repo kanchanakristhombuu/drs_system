@@ -6,6 +6,7 @@ package com.mycompany.disastermanagementsystem.daos;
 
 import com.mycompany.disastermanagementsystem.db.DBConnection;
 import com.mycompany.disastermanagementsystem.models.Report;
+import com.mycompany.disastermanagementsystem.models.Session;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,24 +22,28 @@ public class EmergencyDao {
 
     public static final EmergencyDao INSTANCE = new EmergencyDao();
 
-    private static final String INSERT_SQL
-            = "INSERT INTO emergency ("
-            + "  id, emergency_type, severity, contact_number, address, status"
-            + ") VALUES (?,?,?,?,?,?);";
-
+     private static final String INSERT_SQL =
+        "INSERT INTO emergency " +
+        "(id, emergency_type, severity, contact_number, address, status, reporter_email) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+     
     private EmergencyDao() {
     }
 
     public void save(Report r) {
-        try (Connection cx = DBConnection.getConnection(); PreparedStatement ps = cx.prepareStatement(INSERT_SQL)) {
+        try (Connection cx = DBConnection.getConnection();
+             PreparedStatement ps = cx.prepareStatement(INSERT_SQL)) {
 
             ps.setString(1, r.getReportID().toString());
             ps.setString(2, r.getEmergencyType());
-            ps.setInt(3, r.getSeverity());
+            ps.setInt   (3, r.getSeverity());
             ps.setString(4, r.getContactNumber());
             ps.setString(5, r.getAddress());
-            // Use getStatus() (String) rather than isActive()
             ps.setString(6, r.getStatus());
+
+            // 7) the currently logged-in user's email
+            String email = Session.getCurrentUser().getEmail();
+            ps.setString(7, email);
 
             ps.executeUpdate();
         } catch (Exception e) {
