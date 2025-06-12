@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="508.0" prefWidth="806.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.disastermanagementsystem.controllers.HomeController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <HBox prefHeight="482.0" prefWidth="776.0">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="468.0" prefWidth="288.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="78.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <Button fx:id="dashboardBtn" onAction="#onDashboardHandler" text="Dashboard"/>
+                  <Button fx:id="reportEmergencyBtn" onAction="#onReportEmergencyHandler" text="Report Emergency"/>
+                  <Button fx:id="pastReportsBtn" onAction="#onPastEmergencyReportHandler" text="Past Emergency Reports"/>
+                  <Button fx:id="viewEmergencyReportsBtn" onAction="#viewEmergencyReportsHandler" text="View Emergency Reports"/>
+                  <Button fx:id="viewAssignedEmergenciesBtn" onAction="#viewAssignedEmergenciesHandler" text="View Assigned Emergencies"/>
+                  <VBox alignment="BOTTOM_CENTER" prefHeight="148.0" prefWidth="288.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onLogoutHandler" prefHeight="35.0" prefWidth="82.0" text="Log Out" />
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </VBox>
+            <Line endX="-100.70710754394531" endY="472.29290771484375" startX="-100.0" stroke="#979393a6" />
+            <VBox prefHeight="601.0" prefWidth="381.0" spacing="10.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <children>
+                  <Label text="DRS Dashboard">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="20.0" left="20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label text="Current Emergency">
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextArea fx:id="currentEmergencyTextarea" disable="true" prefHeight="140.0" prefWidth="341.0" promptText="No current emergency">
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </TextArea>
+                  <Label text="Safety Guidelines">
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextArea fx:id="safetyGuidelinesTextarea" disable="true" prefHeight="140.0" prefWidth="341.0" promptText="No current emergency">
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </TextArea>
+               </children>
+               <padding>
+                  <Insets right="20.0" top="20.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>
