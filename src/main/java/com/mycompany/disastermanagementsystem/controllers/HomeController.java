@@ -4,13 +4,12 @@
  */
 package com.mycompany.disastermanagementsystem.controllers;
 
-import com.mycompany.disastermanagementsystem.daos.ReportDao;
+import com.mycompany.disastermanagementsystem.daos.EmergencyDao;
 import com.mycompany.disastermanagementsystem.models.Report;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -39,7 +38,7 @@ public class HomeController extends MainController implements Initializable{
     public void initialize(URL url, ResourceBundle rb) {
         super.initialize(url, rb);
 
-        Optional<Report> maybeCurrent = ReportDao.INSTANCE.getReportsList().stream()
+        Optional<Report> maybeCurrent = EmergencyDao.INSTANCE.getAll().stream()
             .filter(r -> !"Complete".equals(r.getStatus()))
             .findFirst();
 

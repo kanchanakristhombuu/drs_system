@@ -5,7 +5,7 @@
 package com.mycompany.disastermanagementsystem.controllers;
 
 import com.mycompany.disastermanagementsystem.daos.FeedbackDao;
-import com.mycompany.disastermanagementsystem.daos.ReportDao;
+import com.mycompany.disastermanagementsystem.daos.EmergencyDao;
 import com.mycompany.disastermanagementsystem.models.Feedback;
 import com.mycompany.disastermanagementsystem.models.Report;
 import com.mycompany.disastermanagementsystem.models.Session;
@@ -19,7 +19,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -31,7 +30,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
@@ -106,7 +104,7 @@ public class PastEmergencyReportsController extends MainController implements In
         });
         
         ObservableList<Report> complete = FXCollections.observableArrayList();
-        for (Report r : ReportDao.INSTANCE.getReportsList()) {
+        for (Report r : EmergencyDao.INSTANCE.getAll()) {
             if ("Complete".equals(r.getStatus())) complete.add(r);
         }
         pastEmergenciesTable.setItems(complete);
