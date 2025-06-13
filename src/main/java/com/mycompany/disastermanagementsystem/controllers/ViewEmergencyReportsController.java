@@ -11,6 +11,7 @@ import com.mycompany.disastermanagementsystem.models.Authority;
 import com.mycompany.disastermanagementsystem.models.Report;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -20,14 +21,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 
 /**
@@ -56,7 +57,6 @@ public class ViewEmergencyReportsController extends MainController implements In
     private TableColumn<Report, Void> contactAuthority;
     @FXML
     private TableColumn<Report, Void> completeBtnCol;
-    
 
     private FilteredList<Report> activeReports;
 
@@ -79,109 +79,115 @@ public class ViewEmergencyReportsController extends MainController implements In
                 -> new ReadOnlyStringWrapper(c.getValue().getStatus()));
 
         ObservableList<Report> master = FXCollections.observableArrayList(EmergencyDao.INSTANCE.getAll());
-        
+
         activeReports = new FilteredList<>(master,
                 rpt -> !"Complete".equals(rpt.getStatus())
         );
-        
+
         viewReportsTable.setItems(activeReports);
 
-        contactAuthority.setCellFactory(new Callback<>() {
+        contactAuthority.setCellFactory(col -> new TableCell<Report, Void>() {
+            private final Button btn = new Button("Contact");
+
+            {
+                btn.setOnAction(e -> {
+                    Report report = getTableView().getItems().get(getIndex());
+                    showContactDialog(report);
+                });
+            }
+
             @Override
-            public TableCell<Report, Void> call(TableColumn<Report, Void> col) {
-                return new TableCell<>() {
-                    private final Button btn = new Button("Contact");
-
-                    {
-                        btn.setOnAction(e -> {
-                            Report report = getTableView().getItems().get(getIndex());
-                            showContactDialog(report);
-                        });
-                    }
-
-                    @Override
-                    protected void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setGraphic(empty ? null : btn);
-                    }
-                };
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
             }
         });
 
-        completeBtnCol.setCellFactory(new Callback<>() {
+        completeBtnCol.setCellFactory(col -> new TableCell<Report, Void>() {
+            private final Button btn = new Button("Complete");
+
+            {
+                btn.setOnAction(e -> {
+                    Report rpt = getTableView().getItems().get(getIndex());
+                    UUID id = rpt.getReportID();
+
+                    EmergencyDao.INSTANCE.updateStatus(id, "Complete");
+                    EmergencyDepartmentDao.INSTANCE.updateAssignmentStatus(id, "Complete");
+
+                    rpt.setStatus("Complete");
+
+                    activeReports.setPredicate(r
+                            -> !"Complete".equals(r.getStatus())
+                    );
+
+                    viewReportsTable.refresh();
+
+                    getTableView().getItems().remove(rpt);
+
+                    new Alert(
+                            Alert.AlertType.INFORMATION,
+                            "Report " + id + " marked Complete."
+                    ).showAndWait();
+                });
+            }
+
             @Override
-            public TableCell<Report, Void> call(TableColumn<Report, Void> col) {
-                return new TableCell<>() {
-                    private final Button btn = new Button("Complete");
-
-                    {
-                        btn.setOnAction(e -> {
-                            Report rpt = getTableView()
-                                    .getItems()
-                                    .get(getIndex());
-                            rpt.setStatus("Complete");
-                            // refresh the filter to remove this row
-                            activeReports.setPredicate(r
-                                    -> !"Complete".equals(r.getStatus())
-                            );
-                        });
-                    }
-
-                    @Override
-                    protected void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            Report rpt = getTableView()
-                                    .getItems()
-                                    .get(getIndex());
-                            // disable button if already complete
-                            btn.setDisable("Complete".equals(rpt.getStatus()));
-                            setGraphic(btn);
-                        }
-                    }
-                };
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Report rpt = getTableView().getItems().get(getIndex());
+                    // disable if already Complete
+                    btn.setDisable("Complete".equals(rpt.getStatus()));
+                    setGraphic(btn);
+                }
             }
         });
 
     }
 
     private void showContactDialog(Report report) {
-        // find the right authority
-        Authority auth = authorityDao.findByType(report.getEmergencyType());
-        if (auth == null) {
-            new Alert(Alert.AlertType.ERROR, "No authority found for “"
-                    + report.getEmergencyType() + "”").show();
-            return;
-        }
+        Dialog<Authority> dlg = new Dialog<>();
+        dlg.setTitle("Contact Authorities");
 
-        // build a simple GridPane for details
-        GridPane grid = new GridPane();
-        grid.setVgap(8);
-        grid.setHgap(10);
-        grid.addRow(0, new Label("Name:"), new Label(auth.getName()));
-        grid.addRow(1, new Label("Phone:"), new Label(auth.getPhone()));
-        grid.addRow(2, new Label("Email:"), new Label(auth.getEmail()));
+        ButtonType sendButton = new ButtonType("Send", ButtonBar.ButtonData.APPLY);
+        ButtonType cancelButton = ButtonType.CANCEL;
 
-        // custom dialog
-        Dialog<ButtonType> dlg = new Dialog<>();
-        dlg.setTitle("Contact Authority");
-        dlg.getDialogPane().setContent(grid);
-        dlg.getDialogPane().setPrefSize(400, 250);   // width=400px, height=250px
-        dlg.setResizable(true);
-        dlg.getDialogPane().getButtonTypes().addAll(
-                ButtonType.OK, new ButtonType("Contact", ButtonBar.ButtonData.APPLY)
+        dlg.getDialogPane()
+                .getButtonTypes()
+                .setAll(sendButton, cancelButton);
+
+        ChoiceBox<Authority> choice = new ChoiceBox<>();
+        choice.getItems().setAll(
+                AuthorityDao.INSTANCE.findByType(report.getEmergencyType())
+        );
+        choice.getSelectionModel().selectFirst();
+        dlg.getDialogPane().setContent(choice);
+
+        Node sendBtn = dlg.getDialogPane().lookupButton(sendButton);
+        sendBtn.disableProperty().bind(
+                choice.getSelectionModel()
+                        .selectedItemProperty()
+                        .isNull()
         );
 
-        dlg.showAndWait().ifPresent(bt -> {
-            if (bt.getButtonData() == ButtonBar.ButtonData.APPLY) {
-                // send report to department
-                EmergencyDepartmentDao.INSTANCE.sendToAuthority(report, auth);
-                new Alert(Alert.AlertType.INFORMATION,
-                        "Report sent to " + auth.getName()
-                ).showAndWait();
+        dlg.setResultConverter(btn -> {
+            if (btn == sendButton) {
+                return choice.getValue();
             }
+            return null;
+        });
+
+        dlg.showAndWait().ifPresent(auth -> {
+            EmergencyDepartmentDao.INSTANCE.sendToAuthority(report, auth);
+            EmergencyDao.INSTANCE.updateStatus(report.getReportID(), "Assigned");
+            report.setStatus("Assigned");
+            viewReportsTable.refresh();
+            new Alert(
+                    Alert.AlertType.INFORMATION,
+                    "Report sent to " + auth.getName()
+            ).showAndWait();
         });
     }
 }

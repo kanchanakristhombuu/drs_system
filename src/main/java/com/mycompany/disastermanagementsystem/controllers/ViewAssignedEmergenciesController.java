@@ -4,6 +4,7 @@
  */
 package com.mycompany.disastermanagementsystem.controllers;
 
+import com.mycompany.disastermanagementsystem.daos.EmergencyDao;
 import com.mycompany.disastermanagementsystem.daos.EmergencyDepartmentDao;
 import com.mycompany.disastermanagementsystem.models.Report;
 import com.mycompany.disastermanagementsystem.models.Session;
@@ -25,67 +26,88 @@ import javafx.util.Callback;
  *
  * @author Kanch
  */
-public class ViewAssignedEmergenciesController extends MainController implements Initializable{
-    @FXML 
+public class ViewAssignedEmergenciesController extends MainController implements Initializable {
+
+    @FXML
     private TableView<Report> assignedEmergenciesTable;
-    @FXML 
+    @FXML
     private TableColumn<Report, UUID> ID;
-    @FXML 
+    @FXML
     private TableColumn<Report, String> emergencyType;
-    @FXML 
+    @FXML
     private TableColumn<Report, Integer> severity;
-    @FXML 
+    @FXML
     private TableColumn<Report, String> contactNumber;
-    @FXML 
+    @FXML
     private TableColumn<Report, String> address;
-    @FXML 
+    @FXML
     private TableColumn<Report, String> status;
-    @FXML 
+    @FXML
     private TableColumn<Report, Void> inProgressBtnField;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         super.initialize(url, rb);
-        
+
         String role = Session.getCurrentUser().getRole();
-       
-        ID.setCellValueFactory(c ->
-            new ReadOnlyObjectWrapper<>(c.getValue().getReportID()));
-        emergencyType.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(c.getValue().getEmergencyType()));
-        severity.setCellValueFactory(c ->
-            new ReadOnlyObjectWrapper<>(c.getValue().getSeverity()));
-        contactNumber.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(c.getValue().getContactNumber()));
-        address.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(c.getValue().getAddress()));
-        status.setCellValueFactory(c ->
-            c.getValue().statusProperty());
-        
+
+        ID.setCellValueFactory(c
+                -> new ReadOnlyObjectWrapper<>(c.getValue().getReportID()));
+        emergencyType.setCellValueFactory(c
+                -> new ReadOnlyStringWrapper(c.getValue().getEmergencyType()));
+        severity.setCellValueFactory(c
+                -> new ReadOnlyObjectWrapper<>(c.getValue().getSeverity()));
+        contactNumber.setCellValueFactory(c
+                -> new ReadOnlyStringWrapper(c.getValue().getContactNumber()));
+        address.setCellValueFactory(c
+                -> new ReadOnlyStringWrapper(c.getValue().getAddress()));
+        status.setCellValueFactory(c
+                -> c.getValue().statusProperty());
+
+        ObservableList<Report> allAssigned
+                = EmergencyDepartmentDao.INSTANCE.getAssignedReportsList();
+        ObservableList<Report> filtered
+                = allAssigned.filtered(r -> r.getEmergencyType().equals(role));
+
+        assignedEmergenciesTable.setItems(filtered);
+
         inProgressBtnField.setCellFactory(new Callback<>() {
             @Override
             public TableCell<Report, Void> call(TableColumn<Report, Void> col) {
                 return new TableCell<>() {
                     private final Button btn = new Button("In Progress");
+
                     {
-                        btn.setOnAction(e -> {
+                        btn.setOnAction(evt -> {
                             Report rpt = getTableView()
-                                          .getItems()
-                                          .get(getIndex());
+                                    .getItems()
+                                    .get(getIndex());
+                            UUID id = rpt.getReportID();
+
+                            EmergencyDao.INSTANCE.updateStatus(id, "In Progress");
+
+                            EmergencyDepartmentDao.INSTANCE
+                                    .updateAssignmentStatus(id, "In Progress");
+
                             rpt.setStatus("In Progress");
+                            getTableView().refresh();
                         });
                     }
+
                     @Override
                     protected void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
                         } else {
+                            // disable if already in-progress or complete
                             Report rpt = getTableView()
-                                          .getItems()
-                                          .get(getIndex());
-                            btn.setDisable(!"Active".equals(rpt.getStatus()));
+                                    .getItems()
+                                    .get(getIndex());
+                            btn.setDisable(
+                                    !"Assigned".equals(rpt.getStatus())
+                            );
                             setGraphic(btn);
                         }
                     }
@@ -93,13 +115,5 @@ public class ViewAssignedEmergenciesController extends MainController implements
             }
         });
 
-        ObservableList<Report> allAssigned =
-            EmergencyDepartmentDao.INSTANCE.getAssignedReportsList();
-        ObservableList<Report> filtered =
-            allAssigned.filtered(r -> r.getEmergencyType().equals(role));
-
-        assignedEmergenciesTable.setItems(filtered);
     }
 }
-
-

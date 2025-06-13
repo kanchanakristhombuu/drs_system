@@ -21,8 +21,6 @@ com\mycompany\disastermanagementsystem\controllers\ViewAssignedEmergenciesContro
 com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsController$1.class
 com\mycompany\disastermanagementsystem\models\Authority.class
 com\mycompany\disastermanagementsystem\controllers\GiveFeedbackController.class
-com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsController$2$1.class
-com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsController$1$1.class
 com\mycompany\disastermanagementsystem\models\Feedback.class
 com\mycompany\disastermanagementsystem\controllers\PastEmergencyReportsController.class
 com\mycompany\disastermanagementsystem\daos\UserDao.class
