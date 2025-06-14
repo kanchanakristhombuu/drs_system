@@ -1,6 +1,5 @@
 com\mycompany\disastermanagementsystem\controllers\ViewAssignedEmergenciesController$1$1.class
 com\mycompany\disastermanagementsystem\controllers\ViewEmergencyReportsController$2.class
-com\mycompany\disastermanagementsystem\controllers\PastEmergencyReportsController$1$1.class
 com\mycompany\disastermanagementsystem\models\Session.class
 com\mycompany\disastermanagementsystem\daos\EmergencyDepartmentDao.class
 com\mycompany\disastermanagementsystem\daos\FeedbackDao.class
