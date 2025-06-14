@@ -31,87 +31,93 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 /**
  *
  * @author Kanch
  */
-public class PastEmergencyReportsController extends MainController implements Initializable{
-    
-    @FXML 
+public class PastEmergencyReportsController extends MainController implements Initializable {
+
+    @FXML
     private TableView<Report> pastEmergenciesTable;
-    @FXML 
-    private TableColumn<Report, UUID>   ID;
-    @FXML 
-    private TableColumn<Report, String> date;               
-    @FXML 
+    @FXML
+    private TableColumn<Report, UUID> ID;
+    @FXML
+    private TableColumn<Report, String> date;
+    @FXML
     private TableColumn<Report, String> emergencyType;
-    @FXML 
+    @FXML
     private TableColumn<Report, Integer> severity;
-    @FXML 
+    @FXML
     private TableColumn<Report, Void> feedbackBtnField;
-    @FXML 
-    private TableColumn<Report, String>  userFeedback;
-    
+    @FXML
+    private TableColumn<Report, String> userFeedback;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+
         super.initialize(location, resources);
-        
+
         String role = Session.getCurrentUser().getRole();
-      
-        
-        ID.setCellValueFactory(c ->
-            new ReadOnlyObjectWrapper<>(c.getValue().getReportID()));
-        
+
+        ID.setCellValueFactory(c
+                -> new ReadOnlyObjectWrapper<>(c.getValue().getReportID()));
+
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        date.setCellValueFactory(c -> 
-            new ReadOnlyStringWrapper(c.getValue().getDate().format(fmt)));
-        
-        emergencyType.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(c.getValue().getEmergencyType()));
-        severity.setCellValueFactory(c ->
-            new ReadOnlyObjectWrapper<>(c.getValue().getSeverity()));
+        date.setCellValueFactory(c
+                -> new ReadOnlyStringWrapper(c.getValue().getDate().format(fmt)));
+
+        emergencyType.setCellValueFactory(c
+                -> new ReadOnlyStringWrapper(c.getValue().getEmergencyType()));
+        severity.setCellValueFactory(c
+                -> new ReadOnlyObjectWrapper<>(c.getValue().getSeverity()));
 
         // Give Feedback button—only for Users
         showForRoles(feedbackBtnField, "User");
-        feedbackBtnField.setCellFactory(new Callback<>() {
+
+        feedbackBtnField.setCellFactory(col -> new TableCell<Report, Void>() {
+            private final Button btn = new Button("Give Feedback");
+
+            {
+                btn.setOnAction(e -> {
+                    Report rpt = getTableView().getItems().get(getIndex());
+                    GiveFeedbackController.showForReport(
+                            getTableView().getScene().getWindow(),
+                            rpt
+                    );
+                });
+            }
+
             @Override
-            public TableCell<Report, Void> call(TableColumn<Report, Void> tc) {
-                return new TableCell<>() {
-                    private final Button btn = new Button("Give Feedback");
-                    {
-                        btn.setOnAction(e -> {
-                            Report rpt = getTableView()
-                                .getItems().get(getIndex());
-                            openFeedbackDialog(rpt);
-                        });
-                    }
-                    @Override
-                    protected void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setGraphic(empty ? null : btn);
-                    }
-                };
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
             }
         });
-        
+
         showForRoles(userFeedback, "Admin");
-        userFeedback.setCellValueFactory(c -> {
-            Feedback fb = FeedbackDao.INSTANCE.get(c.getValue().getReportID());
-            return new ReadOnlyStringWrapper(fb != null ? fb.getText() : "");
+
+        userFeedback.setCellValueFactory(cellData -> {
+            UUID reportId = cellData.getValue().getReportID();
+
+            ObservableList<Feedback> feedbacks = FeedbackDao.INSTANCE.findByReport(reportId);
+
+            String text = feedbacks.isEmpty() ? "" : feedbacks.get(0).getFeedbackText();
+
+            return new ReadOnlyStringWrapper(text);
         });
-        
+
         ObservableList<Report> complete = FXCollections.observableArrayList();
         for (Report r : EmergencyDao.INSTANCE.getAll()) {
-            if ("Complete".equals(r.getStatus())) complete.add(r);
+            if ("Complete".equals(r.getStatus())) {
+                complete.add(r);
+            }
         }
         pastEmergenciesTable.setItems(complete);
     }
-    
+
     private void openFeedbackDialog(Report report) {
-        // 1) Build dialog
+
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Feedback for Report " + report.getReportID());
         dialog.setHeaderText("Please enter your feedback:");
@@ -127,14 +133,12 @@ public class PastEmergencyReportsController extends MainController implements In
         VBox content = new VBox(10, new Label("Feedback:"), feedbackArea);
         dialog.getDialogPane().setContent(content);
 
-        // 2) Disable Submit until non-empty
         Node submitBtn = dialog.getDialogPane().lookupButton(submitType);
         submitBtn.setDisable(true);
-        feedbackArea.textProperty().addListener((obs, oldV, newV) ->
-            submitBtn.setDisable(newV.trim().isEmpty())
+        feedbackArea.textProperty().addListener((obs, oldV, newV)
+                -> submitBtn.setDisable(newV.trim().isEmpty())
         );
 
-        // 3) Convert result to String
         dialog.setResultConverter(btn -> {
             if (btn == submitType) {
                 return feedbackArea.getText().trim();
@@ -142,10 +146,9 @@ public class PastEmergencyReportsController extends MainController implements In
             return null;
         });
 
-        // 4) Show and save
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(text -> {
-            FeedbackDao.INSTANCE.save(new Feedback(report.getReportID(), text));
+            FeedbackDao.INSTANCE.save(new Feedback(report.getReportID(), Session.getCurrentUser().getEmail(), text));
             pastEmergenciesTable.refresh();
         });
     }
