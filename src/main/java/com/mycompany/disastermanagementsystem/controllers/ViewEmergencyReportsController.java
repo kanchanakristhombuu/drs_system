@@ -93,13 +93,23 @@ public class ViewEmergencyReportsController extends MainController implements In
                 btn.setOnAction(e -> {
                     Report report = getTableView().getItems().get(getIndex());
                     showContactDialog(report);
+
+                    report.setContacted(true);
+                    getTableView().refresh();
                 });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Report report = getTableView().getItems().get(getIndex());
+                    btn.setDisable(report.isContacted());
+                    setGraphic(btn);
+                }
             }
         });
 

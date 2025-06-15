@@ -23,6 +23,8 @@ public class Report {
     private String contactNumber;
     private String address;
 
+    private boolean contacted = false;
+
     private final StringProperty status = new SimpleStringProperty(this, "status", "Active");
     private final StringProperty reporterEmail = new SimpleStringProperty(this, "reporterEmail", "");
 
@@ -110,5 +112,13 @@ public class Report {
 
     public StringProperty reporterEmailProperty() {
         return reporterEmail;
+    }
+
+    public boolean isContacted() {
+        return contacted;
+    }
+
+    public void setContacted(boolean contacted) {
+        this.contacted = contacted;
     }
 }

@@ -163,11 +163,24 @@ public class PastEmergencyReportsController extends MainController implements In
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Report rpt = getTableView().getItems().get(getIndex());
+                UUID reportId = rpt.getReportID();
+                String userEmail = Session.getCurrentUser().getEmail();
+
+                // Check if feedback already exists for this report from the current user
+                List<Feedback> feedbacks = FeedbackDao.INSTANCE.findByReport(reportId);
+                boolean hasFeedback = feedbacks.stream()
+                        .anyMatch(fb -> fb.getUserEmail().equalsIgnoreCase(userEmail));
+
+                btn.setDisable(hasFeedback);
+                setGraphic(btn);
             }
         });
-
-        showForRoles(userFeedback, "Admin");
 
         userFeedback.setCellValueFactory(cellData -> {
             UUID reportId = cellData.getValue().getReportID();
