@@ -33,7 +33,7 @@ public class EmergencyDao {
 
     private EmergencyDao() {
     }
-
+ 
     public void save(Report r) {
         try (Connection cx = DBConnection.getConnection(); PreparedStatement ps = cx.prepareStatement(INSERT_SQL)) {
 
